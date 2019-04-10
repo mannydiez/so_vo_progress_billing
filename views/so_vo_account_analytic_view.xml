@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="so_vo_prog_billing_variation_order">
+        <field name="name">so_vo_prog_billing_variation_order</field>
+        <field name="model">account.analytic.account</field>
+        <field name="inherit_id" ref="budget_management_extension.view_inherit_account_budget" />
+        <field name="arch" type="xml">
+            <xpath expr="//page[@string='Product Budget Lines']" position="after">
+                    <page string="Variation Order">
+                        <field name="variation_table" widget="one2many_list" mode="tree" readonly="1">
+                            <tree create="false" delete="false">
+                                <field name="name" string="Variation Order Number"/>
+                                <field name="create_date" string="Created Date"/>
+                                <field name="approve_date" string="Approved Date"/>
+                                <field name="amount_total" string="Total Amount"/>
+                                <field name="state" invisible="1"/>
+                            </tree>
+                        </field>
+                    </page>
+                    <page string="Budget Changes History">
+                        <field name="budget_change_hist" widget="one2many_list" mode="tree" readonly="1">
+                            <tree create="false" delete="false">
+                                <field name="name"/>
+                                <field name="types"/>
+                                <field name="reqstr_id"/>
+                                <field name="apprvr_id"/>
+                                <field name="date_apprv"/>
+                                <field name="old_amount"/>
+                                <field name="new_amount"/>
+                            </tree>
+                        </field>
+                    </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>
