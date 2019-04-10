@@ -5,7 +5,7 @@
         <field name="model">account.analytic.account</field>
         <field name="inherit_id" ref="budget_management_extension.view_inherit_account_budget" />
         <field name="arch" type="xml">
-            <xpath expr="//page[@string='Product Budget Lines']" position="after">
+            <xpath expr="//page" position="after">
                     <page string="Variation Order">
                         <field name="variation_table" widget="one2many_list" mode="tree" readonly="1">
                             <tree create="false" delete="false">
