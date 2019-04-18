@@ -57,15 +57,6 @@ class construction_change_order_extend(models.Model):
 						if record.product_id in grp.product_ids:
 							_logger.critical('has_group = True')
 							has_group = True
-
-							# created_budget_line = self.env['product.budget.lines'].create({
-							# 	'name':grp.name,
-							# 	'group_product_id':grp.id,
-							# 	'start_date':fields.Date.today(),
-							# 	'end_date':fields.Date.today(),
-							# 	'planned_amount':record.price_total
-							# 	})
-							# _logger.warning('created_budget_line = {}'.format(created_budget_line))
 							temp = [(0,0,{
 								'name':grp.name,
 								'group_product_id':grp.id,
@@ -96,28 +87,29 @@ class construction_change_order_extend(models.Model):
 			_logger.warning('prod_budget_line_obj = {}'.format(prod_budget_line_obj))
 			if prod_budget_line_obj:
 				if new_group:
-					# for x in prod_budget_line_obj.product_ids:
-					# 	new_group.append(x.id)
 					prod_budget_line_obj.product_ids = new_group
 					_logger.warning('prod_budget_line_obj.product_ids = {}'.format(prod_budget_line_obj.product_ids))
-					# created_budget_line = self.env['product.budget.lines'].create({
-					# 	'name':prod_budget_line_obj.name,
-					# 	'group_product_id':prod_budget_line_obj.id,
-					# 	'start_date':fields.Date.today(),
-					# 	'end_date':fields.Date.today(),
-					# 	'planned_amount':total_plan_amount
-					# 	})
-					# _logger.warning('created_budget_line = {}'.format(created_budget_line))
-					# temp = [created_budget_line.id]
-					# for x in rec.analytic_account_id.product_budget_lines:
-					# 	temp.append(x.id)
-					temp = [(1,prod_budget_line_obj.id,{
-						'name':prod_budget_line_obj.name,
-						'group_product_id':prod_budget_line_obj.id,
-						'start_date':fields.Date.today(),
-						'end_date':fields.Date.today(),
-						'planned_amount':total_plan_amount
-						})]
+					
+					prod_budget_line_env = self.env['product.budget.lines'].search([('group_product_id','=',prod_budget_line_obj.id)])
+					_logger.critical('prod_budget_line_env = {}'.format(prod_budget_line_env))
+					if prod_budget_line_env:
+						temp = [(1,prod_budget_line_env.id,{
+							'name':prod_budget_line_obj.name,
+							'group_product_id':prod_budget_line_obj.id,
+							'start_date':fields.Date.today(),
+							'end_date':fields.Date.today(),
+							'planned_amount':total_plan_amount
+							})]
+					else:
+						temp = [(0,0,{
+							'name':prod_budget_line_obj.name,
+							'group_product_id':prod_budget_line_obj.id,
+							'start_date':fields.Date.today(),
+							'end_date':fields.Date.today(),
+							'planned_amount':total_plan_amount
+							})]
+
+					
 					_logger.warning('temp = {}'.format(temp))
 					_logger.warning('rec.analytic_account_id.product_budget_lines = {}'.format(rec.analytic_account_id.product_budget_lines))
 					rec.analytic_account_id.product_budget_lines = temp
@@ -128,17 +120,6 @@ class construction_change_order_extend(models.Model):
 				if not created_group:
 					created_group = grp_prod_obj.create({'name':'no_group','code':'no_group','product_ids':(0,0,new_group)})
 				_logger.warning('created_group = {}'.format(created_group))
-				# created_budget_line = self.env['product.budget.lines'].create({
-				# 	'name':'no_group',
-				# 	'group_product_id':created_group,
-				# 	'start_date':fields.Date.today(),
-				# 	'end_date':fields.Date.today(),
-				# 	'planned_amount':total_plan_amount
-				# 	})
-				# _logger.warning('created_budget_line = {}'.format(created_budget_line))
-				# temp = [created_budget_line.id]
-				# for x in rec.analytic_account_id.product_budget_lines:
-				# 	temp.append(x.id)
 				temp = [(0,0,{
 					'name':'no_group',
 					'group_product_id':created_group.id,
