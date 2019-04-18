@@ -2,7 +2,7 @@
 
 {
     'name': 'SO VO Progress Billing',
-    'version': '1.3',
+    'version': '2.0',
     'category': 'Sales/Accounting',
     'summary': 'User can generate customer invoice using Progress Billing % with VO Rate method from Variation Order',
     'description': "Variation Order is additional sales order/change request order. User can generate customer invoice using Progress Billing % with VO Rate method from Variation Order.",

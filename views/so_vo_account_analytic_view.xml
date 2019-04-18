@@ -10,10 +10,10 @@
                         <field name="variation_table" widget="one2many_list" mode="tree" readonly="1">
                             <tree create="false" delete="false">
                                 <field name="name" string="Variation Order Number"/>
+                                <field name="state"/>
                                 <field name="create_date" string="Created Date"/>
                                 <field name="approve_date" string="Approved Date"/>
                                 <field name="amount_total" string="Total Amount"/>
-                                <field name="state" invisible="1"/>
                             </tree>
                         </field>
                     </page>
