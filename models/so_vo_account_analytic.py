@@ -98,7 +98,7 @@ class construction_change_order_extend(models.Model):
 							'group_product_id':prod_budget_line_obj.id,
 							'start_date':fields.Date.today(),
 							'end_date':fields.Date.today(),
-							'planned_amount':total_plan_amount
+							'planned_amount':prod_budget_line_env.planned_amount + total_plan_amount
 							})]
 					else:
 						temp = [(0,0,{
