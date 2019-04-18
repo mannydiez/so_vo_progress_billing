@@ -3,6 +3,8 @@
 from odoo import api, fields, models
 import logging
 _logger = logging.getLogger(__name__)
+
+_logger.critical('so_vo_account_analytic INSTALLED')
 class construction_change_order_extend(models.Model):
 	_inherit = 'construction.change.order'
 
