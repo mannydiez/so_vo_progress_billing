@@ -13,6 +13,7 @@
                                 <field name="state"/>
                                 <field name="create_date" string="Created Date"/>
                                 <field name="approve_date" string="Approved Date"/>
+                                <field name="customer_approve_date" string="Customer Approved Date"/>
                                 <field name="amount_total" string="Total Amount"/>
                             </tree>
                         </field>

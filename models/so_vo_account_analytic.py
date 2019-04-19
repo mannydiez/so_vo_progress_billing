@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
  
 from odoo import api, fields, models
-import logging
-_logger = logging.getLogger(__name__)
 
-_logger.critical('so_vo_account_analytic INSTALLED')
 class construction_change_order_extend(models.Model):
 	_inherit = 'construction.change.order'
 
@@ -13,6 +10,25 @@ class construction_change_order_extend(models.Model):
 		readonly=True, 
 		copy=False,
 	)
+	customer_approve_date = fields.Datetime(
+		string='Customer Approved Date',
+		readonly=True, 
+		copy=False,
+	)
+
+	@api.multi
+	def approve_state(self):
+		res = super(construction_change_order_extend,self).approve_state()
+		for rec in self:
+			rec.approve_date = fields.Datetime.now()
+		return res
+
+	@api.multi
+	def customer_approve_state(self):
+		res = super(construction_change_order_extend,self).customer_approve_state()
+		for rec in self:
+			rec.customer_approve_date = fields.Datetime.now()
+			return res
 
 	@api.multi
 	def done_state(self):
@@ -24,38 +40,27 @@ class construction_change_order_extend(models.Model):
 			# for variation order tab
 			for record in rec.order_line_ids:
 				no_group = False #this is flag if the product does not have a group
-				_logger.warning('record.product_id = {}'.format(record.product_id))
-				_logger.warning('rec.analytic_account_id.product_budget_lines = {}'.format(rec.analytic_account_id.product_budget_lines))
 				if not rec.analytic_account_id.product_budget_lines:
 					no_budget_exist = True
 				# record.price_total
 				for line in rec.analytic_account_id.product_budget_lines:
 					exist = False
-					_logger.warning('record.product_id = {} AND line.group_product_id.product_ids = {}'.format(record.product_id,line.group_product_id.product_ids))
 					if record.product_id in line.group_product_id.product_ids:
 						exist = True
-					_logger.warning('exist = {}'.format(exist))
 					if exist:
-						_logger.warning('before line.planned_amount = {}'.format(line.planned_amount))
 						line.planned_amount += record.price_total
-						_logger.warning('after line.planned_amount = {}'.format(line.planned_amount))
 						no_budget_exist = False
 						break
 					else:
 						no_budget_exist = True
 				if no_budget_exist:
-					_logger.warning('no_budget_exist = {}'.format(no_budget_exist))
 
 					# asdasd
 					has_group = False
 					group_or_prod_obj = self.env['group.products'].search([])
-					_logger.warning('group_or_prod_obj = {}'.format(group_or_prod_obj))
 					for grp in group_or_prod_obj:
-						_logger.warning('_____________________________')
-						_logger.warning('record.product_id = {} AND grp.product_ids = {}'.format(record.product_id,grp.product_ids))
 
 						if record.product_id in grp.product_ids:
-							_logger.critical('has_group = True')
 							has_group = True
 							temp = [(0,0,{
 								'name':grp.name,
@@ -64,14 +69,7 @@ class construction_change_order_extend(models.Model):
 								'end_date':fields.Date.today(),
 								'planned_amount':record.price_total
 								})]
-							_logger.warning('temp = {}'.format(temp))
-							# for x in rec.analytic_account_id.product_budget_lines:
-							# 	temp.append(x.id)
-							_logger.warning('rec.analytic_account_id.product_budget_lines = {}'.format(rec.analytic_account_id.product_budget_lines))
 							rec.analytic_account_id.product_budget_lines = temp
-							_logger.warning('rec.analytic_account_id.product_budget_lines = {}'.format(rec.analytic_account_id.product_budget_lines))
-
-
 							break
 
 					if has_group:
@@ -80,18 +78,12 @@ class construction_change_order_extend(models.Model):
 						new_group.append(record.product_id.id)
 						total_plan_amount += record.price_total
 
-			_logger.warning('new_group = {}'.format(new_group))
-			_logger.warning('total_plan_amount = {}'.format(total_plan_amount))
-
 			prod_budget_line_obj = self.env['group.products'].search([('name','=','no_group')])
-			_logger.warning('prod_budget_line_obj = {}'.format(prod_budget_line_obj))
 			if prod_budget_line_obj:
 				if new_group:
 					prod_budget_line_obj.product_ids = new_group
-					_logger.warning('prod_budget_line_obj.product_ids = {}'.format(prod_budget_line_obj.product_ids))
 					
 					prod_budget_line_env = self.env['product.budget.lines'].search([('group_product_id','=',prod_budget_line_obj.id)])
-					_logger.critical('prod_budget_line_env = {}'.format(prod_budget_line_env))
 					if prod_budget_line_env:
 						temp = [(1,prod_budget_line_env.id,{
 							'name':prod_budget_line_obj.name,
@@ -109,17 +101,12 @@ class construction_change_order_extend(models.Model):
 							'planned_amount':total_plan_amount
 							})]
 
-					
-					_logger.warning('temp = {}'.format(temp))
-					_logger.warning('rec.analytic_account_id.product_budget_lines = {}'.format(rec.analytic_account_id.product_budget_lines))
 					rec.analytic_account_id.product_budget_lines = temp
-					_logger.warning('rec.analytic_account_id.product_budget_lines = {}'.format(rec.analytic_account_id.product_budget_lines))
 			else:
 				grp_prod_obj = self.env['group.products']
 				created_group = grp_prod_obj.search([('name','=','no_group')])
 				if not created_group:
 					created_group = grp_prod_obj.create({'name':'no_group','code':'no_group','product_ids':(0,0,new_group)})
-				_logger.warning('created_group = {}'.format(created_group))
 				temp = [(0,0,{
 					'name':'no_group',
 					'group_product_id':created_group.id,
@@ -127,12 +114,7 @@ class construction_change_order_extend(models.Model):
 					'end_date':fields.Date.today(),
 					'planned_amount':total_plan_amount
 					})]
-				_logger.warning('temp = {}'.format(temp))
-				_logger.warning('rec.analytic_account_id.product_budget_lines = {}'.format(rec.analytic_account_id.product_budget_lines))
 				rec.analytic_account_id.product_budget_lines = temp
-				_logger.warning('rec.analytic_account_id.product_budget_lines = {}'.format(rec.analytic_account_id.product_budget_lines))
-
-
 
 			# for product budget hist
 			current_budget_obj = budget_change_obj.search([('contract_id','=',rec.analytic_account_id.id)])
